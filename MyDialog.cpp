@@ -5,12 +5,13 @@
 #include "sdxl.h"
 #include "MyDialog.h"
 #include "afxdialogex.h"
+#include<WinSock2.h>
 #include "../Detours-master/include/detours.h"
 
+#pragma comment(lib,"ws2_32.lib")
 #pragma comment(lib,"../Detours-master/lib.X64/detours.lib")
 
 // MyDialog 对话框
-
 IMPLEMENT_DYNAMIC(MyDialog, CDialog)
 
 MyDialog::MyDialog(CWnd* pParent /*=nullptr*/)
@@ -19,10 +20,40 @@ MyDialog::MyDialog(CWnd* pParent /*=nullptr*/)
 
 }
 
+int (WINAPI* Oldsend)(
+	_In_ SOCKET s,
+	_In_reads_bytes_(len) const char FAR* buf,
+	_In_ int len,
+	_In_ int flags
+	) = send;
+
+int (WINAPI* Oldrecv)(
+	_In_ SOCKET s,
+	_Out_writes_bytes_to_(len, return) __out_data_source(NETWORK) char FAR* buf,
+	_In_ int len,
+	_In_ int flags
+	) = recv;
+
+int MySend(int s,char* buf,int len,int flags)
+{	
+	//我们需要处理封包的代码
+	return Oldsend(s, buf, len, flags);
+}
+
+int MyRecv(int s, char* buf, int len, int flags)
+{
+	//我们需要处理封包的代码
+	return Oldrecv(s, buf, len, flags);
+}
+
 MyDialog* MyDlg = nullptr;
 BOOL MyDialog::OnInitDialog()
 {	
 	DetourTransactionBegin();
+	DetourUpdateThread(GetCurrentThread());
+	DetourAttach(&(PVOID&)Oldsend, MySend);
+	DetourAttach(&(PVOID&)Oldrecv, MyRecv);
+	DetourTransactionCommit();
 	MyDlg = this;
 	return TRUE;
 }
