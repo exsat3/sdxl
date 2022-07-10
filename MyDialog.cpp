@@ -34,7 +34,7 @@ int (WINAPI* Oldrecv)(
 	_In_ int flags
 	) = recv;
 
-CString Bytes2Hex(BYTE* addr, int lng)   //读取字节集 转csrting
+CString Bytes2Hex(BYTE * addr, int lng)   //读取字节集 转csrting
 {
 	CString byteStr;
 	CString byteStrArray;
@@ -47,7 +47,7 @@ CString Bytes2Hex(BYTE* addr, int lng)   //读取字节集 转csrting
 		{
 			byteStr = L"0" + byteStr;
 		}
-		else if (Value == 0) 
+		else if (Value == 0)
 		{
 			byteStr = L"0" + byteStr;
 		}
@@ -69,7 +69,7 @@ BYTE* Hex2Bytes(CString hexstr)
 		plen = hexstr.GetLength() / 2;
 	}
 
-	BYTE* ret = new BYTE[plen+1];
+	BYTE* ret = new BYTE[plen + 1];
 	for (int i = 0, j = 0; i < plen; j += 2, i++)
 	{
 		CString str = hexstr.Mid(j, 2);
@@ -79,15 +79,15 @@ BYTE* Hex2Bytes(CString hexstr)
 }
 
 int J_socketid = 0;
-int MySend(int s,char* buf,int len,int flags)
-{	
+int MySend(int s, char* buf, int len, int flags)
+{
 	//我们需要处理封包的代码
 	BYTE* buff = new BYTE[len];
 	memcpy(buff, buf, len);
 	CString str = Bytes2Hex(buff, len);
 	//if (str.Find(L"00 00 00 A5", 0)!=-1)
 	//{
-	//	J_socketid = s;
+	//	J_socketid = s;  //
 	//}
 	OutputDebugString(str);
 	delete[] buff;
@@ -106,7 +106,7 @@ int MyRecv(int s, char* buf, int len, int flags)
 
 MyDialog* MyDlg = nullptr;
 BOOL MyDialog::OnInitDialog()
-{	
+{
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 	DetourAttach(&(PVOID&)Oldsend, MySend);
@@ -120,7 +120,7 @@ MyDialog::~MyDialog()
 {
 }
 
-void MyDialog::DoDataExchange(CDataExchange* pDX)
+void MyDialog::DoDataExchange(CDataExchange * pDX)
 {
 	CDialog::DoDataExchange(pDX);
 }
@@ -149,7 +149,7 @@ void MyDialog::OnBnClickedButton1()
 	// TODO: 在此添加控件通知处理程序代码
 	CString str;
 	GetDlgItem(IDC_EDIT1)->GetWindowTextW(str);
-	MessageBox(str,0,MB_OK);
+	MessageBox(str, 0, MB_OK);
 
 }
 
