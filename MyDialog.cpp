@@ -1,4 +1,4 @@
-﻿// MyDialog.cpp: 实现文件
+﻿// MyDialog.cpp: 实现文件2
 //
 
 #include "pch.h"
